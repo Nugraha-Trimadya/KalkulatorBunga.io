@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Bunga</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kalkulator Bunga</h1>
+        <form id="calculator-form">
+            <div class="form-group">
+                <label for="calculation-type">Jenis Perhitungan:</label>
+                <select id="calculation-type" class="form-control">
+                    <option value="tunggal">Bunga Tunggal</option>
+                    <option value="majemuk">Bunga Majemuk</option>
+                    <option value="anuitas">Anuitas</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="modal">Modal Awal (Rp):</label>
+                <input type="number" id="modal" class="form-control" placeholder="Masukkan modal awal">
+            </div>
+
+            <div class="form-group">
+                <label for="interest">Bunga (dalam %):</label>
+                <input type="number" id="interest" class="form-control" placeholder="Masukkan bunga">
+            </div>
+
+            <div class="form-group">
+                <label for="time-type">Periode:</label>
+                <select id="time-type" class="form-control" onchange="updateIntervalOptions()">
+                    <option value="tahun">Tahun</option>
+                    <option value="bulan">Bulan</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="interval-group" style="display: none;">
+                <label for="interval">Interval Bulanan:</label>
+                <select id="interval" class="form-control">
+                    <option value="1">Bulanan</option>
+                    <option value="3">Triwulan</option>
+                    <option value="6">Semesteran</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="period">Jumlah Periode:</label>
+                <input type="number" id="period" class="form-control" placeholder="Masukkan jumlah periode">
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="calculate()">Hitung</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function updateIntervalOptions() {
+            const timeType = document.getElementById("time-type").value;
+            const intervalGroup = document.getElementById("interval-group");
+
+            if (timeType === "bulan") {
+                intervalGroup.style.display = "block";
+            } else {
+                intervalGroup.style.display = "none";
+            }
+        }
+
+        function calculate() {
+            const calculationType = document.getElementById("calculation-type").value;
+            const modal = parseFloat(document.getElementById("modal").value);
+            const interest = parseFloat(document.getElementById("interest").value) / 100;
+            let period = parseInt(document.getElementById("period").value);
+            const timeType = document.getElementById("time-type").value;
+
+            if (timeType === "bulan") {
+                const interval = parseInt(document.getElementById("interval").value);
+                period = period / interval;
+            }
+
+            let result;
+
+            if (calculationType === "tunggal") {
+                result = bungaTunggal(modal, interest, period);
+            } else if (calculationType === "majemuk") {
+                result = bungaMajemuk(modal, interest, period);
+            } else if (calculationType === "anuitas") {
+                result = anuitas(modal, interest, period);
+            }
+
+            document.getElementById("result").innerHTML = `<strong>Hasil: Rp ${result.toFixed(2)}</strong>`;
+        }
+
+        function bungaTunggal(modal, bunga, periode) {
+            const bungaTotal = modal * bunga * periode;
+            return modal + bungaTotal;
+        }
+
+        function bungaMajemuk(modal, bunga, periode) {
+            return modal * Math.pow((1 + bunga), periode);
+        }
+
+        function anuitas(modal, bunga, periode) {
+            const anuitasValue = modal * (bunga * Math.pow(1 + bunga, periode)) / (Math.pow(1 + bunga, periode) - 1);
+            return anuitasValue;
+        }
+    </script>
+</body>
+</html>
